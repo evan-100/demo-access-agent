@@ -51,3 +51,23 @@ test('admin sees edit controls and settings', async () => {
 test('logged-in user with no Demo- group is denied everywhere', async () => {
   assert.equal((await get('/dashboard', 'none')).status, 403);
 });
+
+test('an authz failure is caught by the terminal error handler, not leaked', async () => {
+  const brokenOkta = { listUserGroups: async () => { throw new Error('Okta down at /Users/evan/secret'); } };
+  const brokenApp = createApp({ authMiddleware, authz: createAuthz({ okta: brokenOkta }) });
+  const brokenServer = brokenApp.listen(0);
+  const brokenBase = `http://127.0.0.1:${brokenServer.address().port}`;
+  const originalError = console.error;
+  console.error = () => {};
+  try {
+    const res = await fetch(`${brokenBase}/dashboard`, { headers: { 'x-test-user': 'ro' }, redirect: 'manual' });
+    assert.equal(res.status, 500);
+    const body = await res.text();
+    assert.match(body, /Something went wrong/);
+    assert.doesNotMatch(body, /\bat\s+\S+\s*\(/);
+    assert.doesNotMatch(body, /\/Users\//);
+  } finally {
+    console.error = originalError;
+    brokenServer.close();
+  }
+});
