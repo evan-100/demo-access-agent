@@ -64,6 +64,10 @@ npm run metrics                 # provisioning time, cleanup rate
 npm run eval                    # permission-scope / intent accuracy against fixture cases
 ```
 
+## Tests
+
+`npm test` runs the unit suite — no credentials needed, since every network module (Okta, Anthropic) takes an injected fake. `npm run eval` is the only test that calls Claude.
+
 ## Design notes
 
 - **TTL lives in the ledger, not Okta.** Okta group membership has no expiry field on the free tier (time-bound access is a paid Okta Identity Governance feature), so the agent tracks expiry itself in the append-only `data/grants.jsonl` ledger. That ledger doubles as the audit log.
