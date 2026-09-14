@@ -75,3 +75,12 @@ test('grantAccess supersedes an existing active grant for the same user and grou
   const superseded = ledger.events.find((e) => e.type === 'revoked' && e.id === 'old');
   assert.equal(superseded.reason, 'superseded');
 });
+
+test('grantAccess does not supersede the existing grant when the Okta add fails', async () => {
+  const okta = fakeOkta();
+  okta.addUserToGroup = async () => { throw new Error('okta down'); };
+  const ledger = fakeLedger([{ type: 'granted', id: 'old', userId: '00uAE', groupId: 'gRO', at: '2026-09-14T09:00:00.000Z' }]);
+  const parse = async () => ({ user_id: '00uAE', scope: 'read-only', duration_minutes: 10, module: null, ambiguity: null });
+  await assert.rejects(() => grantAccess({ prompt: 'x', okta, ledger, parse }), /okta down/);
+  assert.ok(!ledger.events.some((e) => e.type === 'revoked' && e.id === 'old'));
+});
