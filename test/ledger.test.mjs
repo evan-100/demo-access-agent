@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { createLedger, foldEvents } from '../lib/ledger.mjs';
@@ -45,4 +45,22 @@ test('createLedger appends JSONL, reads back, and tolerates a missing file', () 
   assert.equal(events[1].type, 'revoked');
   assert.match(events[1].at, /^\d{4}-\d{2}-\d{2}T/);
   assert.equal(ledger.grants()[0].status, 'revoked');
+});
+
+test('a corrupt line is skipped and reported, not fatal', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ledger-'));
+  const path = join(dir, 'grants.jsonl');
+  writeFileSync(path, [
+    JSON.stringify(granted('a')),
+    '{not json',
+    JSON.stringify(granted('b')),
+    '',
+  ].join('\n'));
+  const warnings = [];
+  const ledger = createLedger(path, { warn: (msg) => warnings.push(msg) });
+  const events = ledger.read();
+  assert.equal(events.length, 2);
+  assert.equal(foldEvents(events).length, 2);
+  assert.equal(warnings.length, 1);
+  assert.match(warnings[0], /line 2/);
 });
