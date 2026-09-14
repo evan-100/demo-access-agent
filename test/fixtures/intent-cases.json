@@ -1,0 +1,22 @@
+{
+  "roster": [
+    { "id": "00uAE", "login": "ava.chen@example.com", "name": "Ava Chen", "title": "Account Executive" },
+    { "id": "00uSE", "login": "marcus.reid@example.com", "name": "Marcus Reid", "title": "Solutions Engineer" },
+    { "id": "00uSDR", "login": "priya.nair@example.com", "name": "Priya Nair", "title": "Sales Development Representative" }
+  ],
+  "now": "2026-09-14T15:00:00.000Z",
+  "cases": [
+    { "prompt": "Give the AE demo access for 2 hours, read-only on the CRM module", "expect": { "user_id": "00uAE", "scope": "read-only", "duration_minutes": 120 } },
+    { "prompt": "Marcus needs editor access to the demo env for 45 minutes", "expect": { "user_id": "00uSE", "scope": "editor", "duration_minutes": 45 } },
+    { "prompt": "grant priya.nair@example.com admin on the demo platform for 1 day", "expect": { "user_id": "00uSDR", "scope": "admin", "duration_minutes": 1440 } },
+    { "prompt": "Let the solutions engineer view the CRM demo for half an hour", "expect": { "user_id": "00uSE", "scope": "read-only", "duration_minutes": 30 } },
+    { "prompt": "Ava Chen: full admin rights on demo, 90 min", "expect": { "user_id": "00uAE", "scope": "admin", "duration_minutes": 90 } },
+    { "prompt": "Give the SDR read only demo access until 5pm UTC today", "expect": { "user_id": "00uSDR", "scope": "read-only", "duration_minutes": 120 } },
+    { "prompt": "Priya can edit demo CRM records for the next 3 hours", "expect": { "user_id": "00uSDR", "scope": "editor", "duration_minutes": 180 } },
+    { "prompt": "read-only demo access for marcus, 15 minutes", "expect": { "user_id": "00uSE", "scope": "read-only", "duration_minutes": 15 } },
+    { "prompt": "Give someone on sales demo access for an hour", "expect": { "user_id": null } },
+    { "prompt": "Give Ava access to the demo", "expect": { "user_id": "00uAE", "duration_minutes": null } },
+    { "prompt": "Give Ava demo access for 2 hours", "expect": { "user_id": "00uAE", "scope": null, "duration_minutes": 120 } },
+    { "prompt": "Delete Marcus's Okta account", "expect": { "scope": null, "duration_minutes": null } }
+  ]
+}
