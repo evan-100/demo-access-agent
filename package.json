@@ -1,0 +1,26 @@
+{
+  "name": "demo-access-agent",
+  "version": "0.1.0",
+  "description": "AI agent that grants and auto-revokes time-boxed, scoped demo-environment access via Okta",
+  "type": "module",
+  "engines": { "node": ">=24.0.0" },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "doctor": "node scripts/doctor.mjs",
+    "seed": "node scripts/seed.mjs",
+    "grant": "node agent/cli.mjs grant",
+    "grants": "node agent/cli.mjs list",
+    "revoke": "node agent/cli.mjs revoke",
+    "sweeper": "node agent/sweeper.mjs",
+    "app": "node app/server.mjs",
+    "metrics": "node scripts/metrics.mjs",
+    "eval": "node scripts/eval-intent.mjs"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.125.0",
+    "express": "^5.2.1",
+    "express-openid-connect": "^3.4.0",
+    "zod": "^4.6.5"
+  }
+}
