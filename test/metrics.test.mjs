@@ -32,3 +32,11 @@ test('computeMetrics summarises provisioning and cleanup', () => {
 test('computeMetrics with nothing due reports rate 1', () => {
   assert.equal(computeMetrics([], { now }).cleanup.rate, 1);
 });
+
+test('a failed (abandoned) grant past expiry counts as due and outstanding, not revoked', () => {
+  const grants = [g({ id: 'z', status: 'failed', revokeReason: 'abandoned', revokedAt: null })];
+  const m = computeMetrics(grants, { now, sweepIntervalMs: 15000 });
+  assert.equal(m.cleanup.due, 1);
+  assert.equal(m.cleanup.revoked, 0);
+  assert.equal(m.cleanup.outstanding, 1);
+});

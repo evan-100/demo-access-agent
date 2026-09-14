@@ -16,7 +16,7 @@ async function tick() {
   try {
     const active = ledger.grants().filter((g) => g.status === 'active').length;
     const result = await sweepExpired({ okta, ledger, log });
-    log(`sweep done: ${result.revoked.length} revoked, ${result.failed.length} failed, ${active - result.revoked.length} still active`);
+    log(`sweep done: ${result.revoked.length} revoked, ${result.failed.length} failed, ${result.abandoned.length} abandoned, ${active - result.revoked.length} still active`);
   } catch (err) {
     log(`sweep error: ${err.message}`);
   } finally {
