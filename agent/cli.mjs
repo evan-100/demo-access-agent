@@ -53,8 +53,13 @@ async function main(argv) {
   if (command === 'revoke') {
     const [id] = rest;
     if (!id) { console.error(USAGE); return 2; }
-    const grant = ledger.grants().find((g) => g.id === id || g.id.startsWith(id));
-    if (!grant) { console.error(`No grant with id ${id}`); return 1; }
+    const matches = ledger.grants().filter((g) => g.id === id || g.id.startsWith(id));
+    if (matches.length === 0) { console.error(`No grant with id ${id}`); return 1; }
+    if (matches.length > 1) {
+      console.error(`Ambiguous id prefix; matches: ${matches.map((g) => g.id).join(', ')}`);
+      return 1;
+    }
+    const [grant] = matches;
     if (grant.status !== 'active') { console.error(`Grant ${grant.id} is already ${grant.status}`); return 1; }
     await revokeGrant({ grant, okta, ledger, reason: 'manual' });
     console.log(`REVOKED ${grant.id} (${grant.userLogin} removed from ${grant.group})`);
@@ -66,7 +71,7 @@ async function main(argv) {
 }
 
 main(process.argv.slice(2)).then(
-  (code) => process.exit(code),
+  (code) => { process.exitCode = code; },
   (err) => {
     if (err instanceof GrantError) {
       console.error(`DENIED: ${err.message}`);
