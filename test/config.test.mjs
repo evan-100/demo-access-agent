@@ -27,3 +27,17 @@ test('loadConfig reads overrides', () => {
   assert.equal(c.app.port, 4000);
   assert.equal(c.app.baseUrl, 'http://localhost:4000');
 });
+
+test('loadConfig throws on a non-numeric SWEEP_INTERVAL_MS', () => {
+  assert.throws(
+    () => loadConfig({ ...base, SWEEP_INTERVAL_MS: 'abc' }),
+    /Invalid numeric env SWEEP_INTERVAL_MS/,
+  );
+});
+
+test('loadConfig throws on a zero MAX_DURATION_MINUTES', () => {
+  assert.throws(
+    () => loadConfig({ ...base, MAX_DURATION_MINUTES: '0' }),
+    /Invalid numeric env MAX_DURATION_MINUTES/,
+  );
+});
