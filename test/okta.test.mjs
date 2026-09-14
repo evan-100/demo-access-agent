@@ -80,3 +80,15 @@ test('non-2xx throws OktaError with status and errorSummary', async () => {
     (err) => err instanceof OktaError && err.status === 404 && /Resource not found/.test(err.message),
   );
 });
+
+test('non-JSON error response throws OktaError with raw body', async () => {
+  const fetchFn = async () => ({
+    ok: false,
+    status: 502,
+    text: async () => '<html>Bad Gateway</html>',
+  });
+  await assert.rejects(
+    () => createOktaClient({ ...base, fetchFn }).whoAmI(),
+    (err) => err instanceof OktaError && err.status === 502 && /Bad Gateway/.test(err.body.raw),
+  );
+});
