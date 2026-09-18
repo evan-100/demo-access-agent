@@ -45,6 +45,8 @@ Natural-language prompt
    - On the app's Sign On tab, add a groups claim filter: name `groups`, filter "Starts with" `Demo-`
 8. `npm run doctor` — verifies env vars, the Okta token, the three groups, the three seed users, ledger writability, and the app's OIDC config.
 
+**Known Okta/library interop issue.** `app/server.mjs` sets `clientAuthMethod: 'client_secret_post'` deliberately. Without it, login fails with `invalid_client: The client secret supplied for a confidential client is invalid` for any Okta client secret containing `-`, `_`, `.`, `!`, `~`, `*`, `'`, `(`, or `)` — which is most Okta secrets, since Okta generates them with hyphens. The underlying cause: `express-openid-connect` calls `oauth4webapi`'s `client_secret_basic`, which percent-encodes those characters per RFC 6749 Appendix B before Base64-encoding the Basic-auth header; Okta's token endpoint does not decode that encoding back out, so it compares a corrupted secret and rejects it. `client_secret_post` sends the raw secret in the POST body instead, which Okta accepts. If you ever remove or change `clientAuthMethod`, retest login with a secret that contains a hyphen.
+
 ## Usage
 
 Run these in three terminals:

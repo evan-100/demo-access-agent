@@ -24,6 +24,15 @@ const authMiddleware = auth({
   secret: config.app.sessionSecret,
   authRequired: false,
   idpLogout: true,
+  // Okta's client secrets commonly contain '-'/'_'; RFC 6749 Appendix B's
+  // form-url-encoding for client_secret_basic (used by oauth4webapi, which
+  // express-openid-connect calls internally) percent-encodes those before
+  // Base64, and Okta's token endpoint does not decode that back out, so
+  // login fails with invalid_client for any secret containing one of those
+  // characters. client_secret_post sends the raw secret in the POST body
+  // instead, and Okta accepts it regardless of the app's declared
+  // token_endpoint_auth_method.
+  clientAuthMethod: 'client_secret_post',
   authorizationParams: { response_type: 'code', scope: 'openid profile email groups' },
 });
 
