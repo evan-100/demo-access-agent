@@ -92,10 +92,12 @@ npm run eval                    # permission-scope / intent accuracy against fix
 
 | Metric | Value | Measured on |
 | --- | --- | --- |
-| Provisioning time (median) | pending first measured run | — |
-| Provisioning time (p95) | pending first measured run | — |
-| Expired-access cleanup rate | pending first measured run | — |
-| Permission-scope accuracy | pending first measured run | — |
+| Provisioning time (median) | 3.4 s (3,381 ms) | 8 live grants, prompt submitted → Okta membership live |
+| Provisioning time (p95) | 3.5 s (3,508 ms) | same 8 grants |
+| Expired-access cleanup rate | 100% (3/3 due, all on time) | 1-minute grants, 5 s sweep interval; removed 1.4–3.3 s after expiry, 0 failed attempts |
+| Permission-scope accuracy | 100% (12/12 eval cases) | `npm run eval` on `claude-sonnet-5`: employee 11/11, scope 10/10, duration 11/11 |
+
+Measured 2026-09-21 against a live Okta Integrator Free Plan org. The other 5 grants were replaced by a newer grant for the same employee, so they never came due.
 
 ## License
 
